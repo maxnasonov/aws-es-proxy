@@ -115,7 +115,10 @@ func (p *proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	payload := bytes.NewReader(replaceBody(req))
 	p.Signer.Sign(req, payload, p.Service, p.Region, time.Now())
 
-	resp, err := http.DefaultClient.Do(req)
+    var netClient = &http.Client{
+        Timeout: time.Second * 3600,
+    }
+    resp, err := netClient.Do(req)
 	if err != nil {
 		log.Println(err)
 		respondError(err)
